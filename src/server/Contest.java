@@ -1,11 +1,8 @@
 package server;
 
 import java.util.Vector;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Iterator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,7 +11,7 @@ import org.json.simple.parser.ParseException;
 public class Contest implements Runnable {
 
     private int currentQuestion = 0;
-    private JSONArray questions;
+    private JSONArray contestQn;
     Vector<ClientHandler> clients;
     QuestionAnswer[] questionAnswers;
 
@@ -25,26 +22,26 @@ public class Contest implements Runnable {
 
     @Override
     public void run() {
-        initialGame();
+        StartContest();
         while (clients.size() < 3);
-        while(currentQuestion < questions.size()) {
-            sendQuestion();
+        while(currentQuestion < contestQn.size()) {
+            nextQuestion();
             // Time limit and Clients' scores
         }
         currentQuestion++;
     }
 
-    public void initialGame(){
+    public void StartContest(){
         JSONParser jsonParser = new JSONParser();
         try {
-            questions = (JSONArray) jsonParser.parse(new FileReader("questions.json"));
+            contestQn = (JSONArray) jsonParser.parse(new FileReader("ContestQuestions.json"));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendQuestion(){
-        JSONObject obj = (JSONObject) questions.get(currentQuestion);
+    public void nextQuestion(){
+        JSONObject obj = (JSONObject) contestQn.get(currentQuestion);
         String question = (String) obj.get("question");
         String options = obj.get("options").toString();
         options = options.substring(1, options.length()-1);
