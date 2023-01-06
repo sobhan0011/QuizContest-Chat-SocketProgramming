@@ -1,10 +1,10 @@
 package server;
 
 class QuestionAnswer {
-    String question, answer;
-    String[] options;
+    String question, options;
+    int answer;
 
-    QuestionAnswer(String question, String answer, String[] options)
+    QuestionAnswer(String question, String options, int answer)
     {
         this.question = question;
         this.answer = answer;
@@ -15,11 +15,11 @@ class QuestionAnswer {
         return question;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getOptions() {
+        return options;
     }
 
-    public String[] getOptions() {
-        return options;
+    public int getAnswer() {
+        return answer;
     }
 }
