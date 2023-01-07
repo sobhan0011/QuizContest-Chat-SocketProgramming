@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-class ClientHandler implements Runnable
+public class ClientHandler implements Runnable
 {
     Scanner input = new Scanner(System.in);
     private final String name;
@@ -48,7 +48,7 @@ class ClientHandler implements Runnable
 
                 // search for the recipient in the connected devices list.
                 // clients is the vector storing client of active users
-                for (ClientHandler clientHandler : Server.clients)
+                for (ClientHandler clientHandler : Server.clientHandlers)
                 {
                     // if the recipient is found, write on its
                     // output stream
