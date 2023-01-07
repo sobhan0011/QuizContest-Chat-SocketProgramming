@@ -1,6 +1,11 @@
 package server;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.Vector;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,39 +17,84 @@ import org.json.simple.parser.ParseException;
 public class Contest implements Runnable {
 
     private int currentQuestion = 0;
-    private JSONArray contestQn;
+    private JSONArray contestQuestionAnswers;
     Vector<ClientHandler> clients;
     ArrayList<QuestionAnswer> questionAnswers;
+    int clientNumber;
+    DataInputStream dataInputStream;
+    DataOutputStream dataOutputStream;
+    Contest(Vector<ClientHandler> clients) throws IOException {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            contestQuestionAnswers = (JSONArray) jsonParser.parse(new FileReader("ContestQuestions.json"));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
 
-    Contest(Vector<ClientHandler> clients) {
+        Scanner scanner = new Scanner(System.in);
+
+        // getting localhost ip
+        InetAddress ip = InetAddress.getByName("localhost");
+
+        Socket socket = new Socket(ip, 1000);
+
+        dataInputStream = new DataInputStream(socket.getInputStream());
+        dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+        Thread sendMessage = new Thread(() -> {
+            while (true) {
+                // read the message to deliver.
+                String massage = scanner.nextLine();
+
+                try {
+                    dataOutputStream.writeUTF(massage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Thread readMessage = new Thread(() -> {
+            while (true) {
+                try {
+                    String massage = dataInputStream.readUTF();
+                    System.out.println(massage);
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            }
+        });
+        sendMessage.start();
+        readMessage.start();
         this.clients = clients;
     }
 
     @Override
     public void run() {
-        StartContest();
-        while (clients.size() < 3);
-        while(currentQuestion < contestQn.size()) {
+        while (clients.size() < clientNumber);
+        long startTime;
+        while(currentQuestion < contestQuestionAnswers.size()) {
             nextQuestion();
+            // send question to those
+            startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < 45000)
+            {
+                this.dataInputStream
+                // read answers
+            }
+
             // Time limit and Clients' scores
         }
         currentQuestion++;
     }
 
-    public void StartContest() {
-        JSONParser jsonParser = new JSONParser();
-        try {
-            contestQn = (JSONArray) jsonParser.parse(new FileReader("ContestQuestions.json"));
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void nextQuestion() {
-        JSONObject obj = (JSONObject) contestQn.get(currentQuestion);
+        JSONObject obj = (JSONObject) contestQuestionAnswers.get(currentQuestion);
         String question = (String) obj.get("question");
         String options = obj.get("options").toString();
-        options = options.substring(1, options.length()-1);
+        options = options.substring(1, options.length() - 1);
         int answer = Integer.parseInt(obj.get("answer").toString());
         questionAnswers.add(new QuestionAnswer(question, options, answer));
     }

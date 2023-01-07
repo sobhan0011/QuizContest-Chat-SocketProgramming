@@ -45,11 +45,11 @@ public class ClientHandler implements Runnable
                    recipient = "";
                    message = "";
                     for (ClientHandler clientHandler : Server.clientHandlers)
-                    {
                         if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn)
+                        {
                             clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
-                        break;
-                    }
+                            break;
+                        }
                 }
                 else if (received.matches())
                 {

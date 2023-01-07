@@ -13,8 +13,8 @@ public class Server
     {
         ServerSocket serverSocket = new ServerSocket(1379);
         Socket socket;
-        Thread ContestThread = new Thread(new Contest(clientHandlers));
-
+        Thread contestThread = new Thread(new Contest(clientHandlers));
+        contestThread.start();
         while (true)
         {
             socket = serverSocket.accept();
