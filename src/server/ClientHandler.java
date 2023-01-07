@@ -26,38 +26,36 @@ public class ClientHandler implements Runnable
     @Override
     public void run() {
 
-        String received;
+        String received, recipient, message, answer;
         while (true)
         {
             try
             {
                 received = dataInputStream.readUTF();
-
+                received = received.replaceFirst("^\\s*", "");
                 System.out.println(received);
 
-                if (received.equals("logout")) {
+                if (received.trim().equals("logout")) {
                     this.isloggedIn = false;
                     this.socket.close();
                     break;
                 }
-
-                // break the string into message and recipient part
-                StringTokenizer stringTokenizer = new StringTokenizer(received, "#");
-                String MsgToSend = stringTokenizer.nextToken();
-                String recipient = stringTokenizer.nextToken();
-
-                // search for the recipient in the connected devices list.
-                // clients is the vector storing client of active users
-                for (ClientHandler clientHandler : Server.clientHandlers)
+                if (received.matches())
                 {
-                    // if the recipient is found, write on its
-                    // output stream
-                    if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn)
+                   recipient = "";
+                   message = "";
+                    for (ClientHandler clientHandler : Server.clientHandlers)
                     {
-                        clientHandler.dataOutputStream.writeUTF(this.name + " : " + MsgToSend);
+                        if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn)
+                            clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
                         break;
                     }
                 }
+                else if (received.matches())
+                {
+                    answer = "";
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
