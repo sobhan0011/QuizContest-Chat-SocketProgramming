@@ -13,7 +13,8 @@ public class Server
     {
         ServerSocket serverSocket = new ServerSocket(1379);
         Socket socket;
-        Thread contestThread = new Thread(new Contest(clientHandlers));
+        Contest contest = new Contest(clientHandlers);
+        Thread contestThread = new Thread(contest);
         contestThread.start();
         while (true)
         {
@@ -23,7 +24,7 @@ public class Server
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
             System.out.println("Creating a new handler for this client...");
-            ClientHandler clientHandler = new ClientHandler(socket,"client " + clientCount, dataInputStream, dataOutputStream);
+            ClientHandler clientHandler = new ClientHandler(socket,"client " + clientCount, dataInputStream, dataOutputStream, contest);
 
             Thread clientHandlerThread = new Thread(clientHandler);
 

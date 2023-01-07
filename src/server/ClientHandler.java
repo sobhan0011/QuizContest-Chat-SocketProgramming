@@ -14,13 +14,20 @@ public class ClientHandler implements Runnable
     final DataOutputStream dataOutputStream;
     Socket socket;
     boolean isloggedIn;
+    Contest contest;
 
-    public ClientHandler(Socket socket, String name, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+    public ClientHandler(Socket socket, String name, DataInputStream dataInputStream, DataOutputStream dataOutputStream, Contest contest) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
         this.name = name;
         this.socket = socket;
         this.isloggedIn = true;
+        this.contest = contest;
+    }
+
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -54,6 +61,7 @@ public class ClientHandler implements Runnable
                 else if (received.matches())
                 {
                     answer = "";
+                    contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
                 }
 
             } catch (IOException e) {

@@ -18,11 +18,17 @@ public class Contest implements Runnable {
 
     private int currentQuestion = 0;
     private JSONArray contestQuestionAnswers;
-    Vector<ClientHandler> clients;
-    ArrayList<QuestionAnswer> questionAnswers;
+    private final Vector<ClientHandler> clients;
+    private ArrayList<QuestionAnswer> questionAnswers;
     int clientNumber;
-    DataInputStream dataInputStream;
-    DataOutputStream dataOutputStream;
+    private final DataInputStream dataInputStream;
+    private final DataOutputStream dataOutputStream;
+
+   public DataOutputStream getDataOutputStream() {
+       return this.dataOutputStream;
+   }
+
+
     Contest(Vector<ClientHandler> clients) throws IOException {
         JSONParser jsonParser = new JSONParser();
         try {
@@ -74,17 +80,33 @@ public class Contest implements Runnable {
     public void run() {
         while (clients.size() < clientNumber);
         long startTime;
+        String token;
+        int[] answers = new int[clientNumber];
+        int[] scores = new int[clientNumber];
         while(currentQuestion < contestQuestionAnswers.size()) {
             nextQuestion();
-            // send question to those
+            for (int i = 0; i < clientNumber; i++) {
+                clients.get(i).dataOutputStream.writeUTF();
+            }
             startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 45000)
             {
-                this.dataInputStream
-                // read answers
+                try {
+                    token = this.dataInputStream.readUTF();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                for (int i = 0; i < clients.size(); i++) {
+                    if (clients.get(i).getName().equals() && answers[i] == 0)
+                        answers[i] == ;
+                }
             }
-
-            // Time limit and Clients' scores
+            for (int i = 0; i < clientNumber; i++)
+                if (answers[i] == questionAnswers.get(currentQuestion).getAnswer())
+                    scores[i] += 10;
+            for (int i = 0; i < clientNumber; i++) {
+                clients.get(i).dataOutputStream.writeUTF();
+            }
         }
         currentQuestion++;
     }
