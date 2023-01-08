@@ -22,10 +22,10 @@ public class Client
         Thread sendMessage = new Thread(() -> {
             while (true) {
                 // read the message to deliver.
-                String massage = scn.nextLine();
+                String message = scn.nextLine();
 
                 try {
-                    dataOutputStream.writeUTF(massage);
+                    dataOutputStream.writeUTF(message);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

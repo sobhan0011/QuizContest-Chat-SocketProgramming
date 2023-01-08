@@ -16,6 +16,8 @@ import org.json.simple.parser.ParseException;
 
 public class Contest implements Runnable {
 
+    String question;
+    String options;
     private int currentQuestion = 0;
     private JSONArray contestQuestionAnswers;
     private final Vector<ClientHandler> clients;
@@ -80,13 +82,22 @@ public class Contest implements Runnable {
     public void run() {
         while (clients.size() < clientNumber);
         long startTime;
-        String token;
+        String token = "";
         int[] answers = new int[clientNumber];
         int[] scores = new int[clientNumber];
         while(currentQuestion < contestQuestionAnswers.size()) {
             nextQuestion();
+            String[] optionsSplit = options.split(",");
+            String optionsFormat = "";
+            for (int i = 0; i < 3; i++) {
+                optionsFormat += i+1 + ". " + optionsSplit[i].substring(1, optionsSplit[i].length()-1) + "\n";
+            }
             for (int i = 0; i < clientNumber; i++) {
-                clients.get(i).dataOutputStream.writeUTF();
+                try {
+                    clients.get(i).dataOutputStream.writeUTF(question + optionsFormat);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 45000)
@@ -96,9 +107,10 @@ public class Contest implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                String[] str = token.split(":");
                 for (int i = 0; i < clients.size(); i++) {
-                    if (clients.get(i).getName().equals() && answers[i] == 0)
-                        answers[i] == ;
+                    if (clients.get(i).getName().equals(str[0]) && answers[i] == 0)
+                        answers[i] = Integer.parseInt(str[1]);
                 }
             }
             for (int i = 0; i < clientNumber; i++)
@@ -114,8 +126,8 @@ public class Contest implements Runnable {
 
     public void nextQuestion() {
         JSONObject obj = (JSONObject) contestQuestionAnswers.get(currentQuestion);
-        String question = (String) obj.get("question");
-        String options = obj.get("options").toString();
+        question = (String) obj.get("question");
+        options = obj.get("options").toString();
         options = options.substring(1, options.length() - 1);
         int answer = Integer.parseInt(obj.get("answer").toString());
         questionAnswers.add(new QuestionAnswer(question, options, answer));

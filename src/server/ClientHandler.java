@@ -47,10 +47,12 @@ public class ClientHandler implements Runnable
                     this.socket.close();
                     break;
                 }
-                if (received.matches())
+                if (received.substring(0,5).equals("msg to"))
                 {
-                   recipient = "";
-                   message = "";
+                   String temp = received.substring(6, received.length());
+                   String[] str = temp.split(":");
+                   recipient = str[0];
+                   message = str[1];
                     for (ClientHandler clientHandler : Server.clientHandlers)
                         if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn)
                         {
@@ -58,9 +60,9 @@ public class ClientHandler implements Runnable
                             break;
                         }
                 }
-                else if (received.matches())
+                else if (received.substring(0,5).equals("answer"))
                 {
-                    answer = "";
+                    answer = received.substring(7,received.length());
                     contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
                 }
 
