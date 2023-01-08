@@ -3,11 +3,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ClientHandler implements Runnable
 {
-    Scanner input = new Scanner(System.in);
     private final String name;
     final DataInputStream dataInputStream;
     final DataOutputStream dataOutputStream;

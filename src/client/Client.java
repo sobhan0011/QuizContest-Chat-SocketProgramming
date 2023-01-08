@@ -10,9 +10,8 @@ public class Client
     public static void main(String[] args) throws IOException
     {
         Scanner input = new Scanner(System.in);
-
-        InetAddress ip = InetAddress.getByName("localhost");
-        Socket socket = new Socket(ip, ServerPort);
+        System.out.println("nigga");
+        Socket socket = new Socket("localhost", ServerPort);
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 

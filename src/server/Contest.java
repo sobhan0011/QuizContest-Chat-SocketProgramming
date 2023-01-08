@@ -2,7 +2,6 @@ package Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Contest implements Runnable {
+    final static int ServerPort = 1379;
     private String question;
     private String options;
     private int currentQuestion = 0;
@@ -42,8 +42,8 @@ public class Contest implements Runnable {
         Scanner input = new Scanner(System.in);
 
         // getting localhost ip
-        InetAddress ip = InetAddress.getByName("localhost");
-        Socket socket = new Socket(ip, 1000);
+        //InetAddress ip = InetAddress.getByName("localhost");
+        Socket socket = new Socket("localhost", ServerPort);
         dataInputStream = new DataInputStream(socket.getInputStream());
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
@@ -80,9 +80,10 @@ public class Contest implements Runnable {
         String token = "";
         int[] answers = new int[clientNumber];
         int[] scores = new int[clientNumber];
-
-        while (clients.size() < clientNumber);
-
+        System.out.println("nigga");
+        while (clients.size() < 1/*clientNumber*/);
+        System.out.println("wait");
+        System.out.println(contestQuestionAnswers.size());
         while(currentQuestion < contestQuestionAnswers.size()) {
             nextQuestion();
             String[] optionsSplit = options.split(",");
