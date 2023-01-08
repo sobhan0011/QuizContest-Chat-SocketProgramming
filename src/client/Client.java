@@ -9,21 +9,16 @@ public class Client
 
     public static void main(String[] args) throws IOException
     {
-        Scanner scn = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
 
-        // getting localhost ip
         InetAddress ip = InetAddress.getByName("localhost");
-
         Socket socket = new Socket(ip, ServerPort);
-
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
         Thread sendMessage = new Thread(() -> {
             while (true) {
-                // read the message to deliver.
-                String message = scn.nextLine();
-
+                String message = input.nextLine();
                 try {
                     dataOutputStream.writeUTF(message);
                 } catch (IOException e) {
@@ -38,7 +33,6 @@ public class Client
                     String massage = dataInputStream.readUTF();
                     System.out.println(massage);
                 } catch (IOException e) {
-
                     e.printStackTrace();
                 }
             }
@@ -46,6 +40,5 @@ public class Client
 
         sendMessage.start();
         readMessage.start();
-
     }
 }

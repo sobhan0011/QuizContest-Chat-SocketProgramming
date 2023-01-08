@@ -80,18 +80,20 @@ public class Contest implements Runnable {
 
     @Override
     public void run() {
-        while (clients.size() < clientNumber);
         long startTime;
         String token = "";
         int[] answers = new int[clientNumber];
         int[] scores = new int[clientNumber];
+
+        while (clients.size() < clientNumber);
+
         while(currentQuestion < contestQuestionAnswers.size()) {
             nextQuestion();
             String[] optionsSplit = options.split(",");
             String optionsFormat = "";
-            for (int i = 0; i < 3; i++) {
-                optionsFormat += i+1 + ". " + optionsSplit[i].substring(1, optionsSplit[i].length()-1) + "\n";
-            }
+            for (int i = 0; i < 3; i++)
+                optionsFormat += i + 1 + ". " + optionsSplit[i].substring(1, optionsSplit[i].length() - 1) + "\n";
+
             for (int i = 0; i < clientNumber; i++) {
                 try {
                     clients.get(i).dataOutputStream.writeUTF(question + optionsFormat);
@@ -99,6 +101,7 @@ public class Contest implements Runnable {
                     e.printStackTrace();
                 }
             }
+
             startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 45000)
             {
@@ -107,12 +110,13 @@ public class Contest implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 String[] str = token.split(":");
-                for (int i = 0; i < clients.size(); i++) {
+                for (int i = 0; i < clients.size(); i++)
                     if (clients.get(i).getName().equals(str[0]) && answers[i] == 0)
                         answers[i] = Integer.parseInt(str[1]);
-                }
             }
+
             for (int i = 0; i < clientNumber; i++)
                 if (answers[i] == questionAnswers.get(currentQuestion).getAnswer())
                     scores[i] += 10;
@@ -124,8 +128,8 @@ public class Contest implements Runnable {
                     e.printStackTrace();
                 }
             }
-
         }
+
         currentQuestion++;
     }
 

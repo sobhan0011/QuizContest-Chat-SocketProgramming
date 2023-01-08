@@ -1,8 +1,8 @@
 package server;
 
 class QuestionAnswer {
-    private String question, options;
-    private int answer;
+    private final String question, options;
+    private final int answer;
 
     QuestionAnswer(String question, String options, int answer)
     {
