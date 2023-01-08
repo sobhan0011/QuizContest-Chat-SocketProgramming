@@ -39,21 +39,17 @@ public class Contest implements Runnable {
             e.printStackTrace();
         }
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
 
         // getting localhost ip
         InetAddress ip = InetAddress.getByName("localhost");
-
         Socket socket = new Socket(ip, 1000);
-
         dataInputStream = new DataInputStream(socket.getInputStream());
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
         Thread sendMessage = new Thread(() -> {
             while (true) {
-                // read the message to deliver.
-                String massage = scanner.nextLine();
-
+                String massage = input.nextLine();
                 try {
                     dataOutputStream.writeUTF(massage);
                 } catch (IOException e) {
