@@ -49,21 +49,25 @@ public class ClientHandler implements Runnable
                 }
                 if (received.substring(0,5).equals("msg to"))
                 {
-                   String temp = received.substring(6, received.length());
-                   String[] str = temp.split(":");
-                   recipient = str[0];
-                   message = str[1];
-                    for (ClientHandler clientHandler : Server.clientHandlers)
-                        if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn)
-                        {
-                            clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
-                            break;
-                        }
+                    String temp = received.substring(6);
+                    if(temp.contains(":"))
+                    {
+                        String[] str = temp.split(":");
+                        recipient = str[0];
+                        message = str[1];
+                        for (ClientHandler clientHandler : Server.clientHandlers)
+                            if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn) {
+                                clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
+                                break;
+                            }
+                    }
                 }
                 else if (received.substring(0,5).equals("answer"))
                 {
-                    answer = received.substring(7,received.length());
-                    contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
+                    if(received.charAt(6) == ':') {
+                        answer = received.substring(7);
+                        contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
+                    }
                 }
 
             } catch (IOException e) {
