@@ -1,4 +1,4 @@
-package server;
+package Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,9 +25,9 @@ public class Contest implements Runnable {
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
 
-   public DataOutputStream getDataOutputStream() {
-       return this.dataOutputStream;
-   }
+    public DataOutputStream getDataOutputStream() {
+        return this.dataOutputStream;
+    }
 
 
     Contest(Vector<ClientHandler> clients) throws IOException {
@@ -140,7 +140,7 @@ public class Contest implements Runnable {
     }
 
     private String resultTable(Vector<ClientHandler> clients, int[] scores) {
-       String str = null;
+        String str = null;
         for (int i = 0; i < clients.size(); i++)
             str += this.clients.get(i).getName() + " : " + scores[i] + ".\n";
         return str;

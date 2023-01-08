@@ -1,4 +1,4 @@
-package server;
+package Server;
 
 class QuestionAnswer {
     private final String question, options;
