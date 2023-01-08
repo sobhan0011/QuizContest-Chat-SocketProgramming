@@ -41,8 +41,6 @@ public class Contest implements Runnable {
 
         Scanner input = new Scanner(System.in);
 
-        // getting localhost ip
-        //InetAddress ip = InetAddress.getByName("localhost");
         Socket socket = new Socket("localhost", ServerPort);
         dataInputStream = new DataInputStream(socket.getInputStream());
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
