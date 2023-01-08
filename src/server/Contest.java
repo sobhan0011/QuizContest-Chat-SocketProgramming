@@ -15,14 +15,13 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class Contest implements Runnable {
-
-    String question;
-    String options;
+    private String question;
+    private String options;
     private int currentQuestion = 0;
     private JSONArray contestQuestionAnswers;
     private final Vector<ClientHandler> clients;
-    private ArrayList<QuestionAnswer> questionAnswers;
-    int clientNumber;
+    private final ArrayList<QuestionAnswer> questionAnswers;
+    private int clientNumber;
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
 
@@ -32,6 +31,7 @@ public class Contest implements Runnable {
 
 
     Contest(Vector<ClientHandler> clients) throws IOException {
+        this.questionAnswers = new ArrayList<>();
         JSONParser jsonParser = new JSONParser();
         try {
             contestQuestionAnswers = (JSONArray) jsonParser.parse(new FileReader("ContestQuestions.json"));
@@ -116,9 +116,15 @@ public class Contest implements Runnable {
             for (int i = 0; i < clientNumber; i++)
                 if (answers[i] == questionAnswers.get(currentQuestion).getAnswer())
                     scores[i] += 10;
+            String str = resultTable(clients, scores);
             for (int i = 0; i < clientNumber; i++) {
-                clients.get(i).dataOutputStream.writeUTF();
+                try {
+                    clients.get(i).dataOutputStream.writeUTF(str);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
         }
         currentQuestion++;
     }
@@ -131,6 +137,13 @@ public class Contest implements Runnable {
         options = options.substring(1, options.length() - 1);
         int answer = Integer.parseInt(obj.get("answer").toString());
         questionAnswers.add(new QuestionAnswer(question, options, answer));
+    }
+
+    private String resultTable(Vector<ClientHandler> clients, int[] scores) {
+       String str = null;
+        for (int i = 0; i < clients.size(); i++)
+            str += this.clients.get(i).getName() + " : " + scores[i] + ".\n";
+        return str;
     }
 
 }

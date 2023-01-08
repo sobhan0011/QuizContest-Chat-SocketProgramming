@@ -47,10 +47,10 @@ public class ClientHandler implements Runnable
                     this.socket.close();
                     break;
                 }
-                if (received.substring(0,5).equals("msg to"))
+                if (received.startsWith("msg to"))
                 {
                     String temp = received.substring(6);
-                    if(temp.contains(":"))
+                    if (temp.contains(":"))
                     {
                         String[] str = temp.split(":");
                         recipient = str[0];
@@ -62,13 +62,11 @@ public class ClientHandler implements Runnable
                             }
                     }
                 }
-                else if (received.substring(0,5).equals("answer"))
-                {
-                    if(received.charAt(6) == ':') {
+                else if (received.startsWith("answer"))
+                    if (received.charAt(6) == ':') {
                         answer = received.substring(7);
                         contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
                     }
-                }
 
             } catch (IOException e) {
                 e.printStackTrace();
