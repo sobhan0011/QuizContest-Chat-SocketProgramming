@@ -7,7 +7,7 @@ public class Client
 {
     final static int ServerPort = 1379;
 
-    public static void main(String[] args) throws UnknownHostException, IOException
+    public static void main(String[] args) throws IOException
     {
         Scanner scn = new Scanner(System.in);
 

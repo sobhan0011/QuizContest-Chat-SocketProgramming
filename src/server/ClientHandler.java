@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 public class ClientHandler implements Runnable
 {
@@ -14,15 +13,15 @@ public class ClientHandler implements Runnable
     final DataOutputStream dataOutputStream;
     Socket socket;
     boolean isloggedIn;
-    Contest contest;
+    DataOutputStream contestDataOutputStrem;
 
-    public ClientHandler(Socket socket, String name, DataInputStream dataInputStream, DataOutputStream dataOutputStream, Contest contest) {
+    public ClientHandler(Socket socket, String name, DataInputStream dataInputStream, DataOutputStream dataOutputStream, DataOutputStream contestDataOutputStrem) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
         this.name = name;
         this.socket = socket;
         this.isloggedIn = true;
-        this.contest = contest;
+        this.contestDataOutputStrem = contestDataOutputStrem;
     }
 
 
@@ -65,7 +64,7 @@ public class ClientHandler implements Runnable
                 else if (received.startsWith("answer"))
                     if (received.charAt(6) == ':') {
                         answer = received.substring(7);
-                        contest.getDataOutputStream().writeUTF(this.name + " : " + answer);
+                        contestDataOutputStrem.writeUTF(this.name + " : " + answer);
                     }
 
             } catch (IOException e) {

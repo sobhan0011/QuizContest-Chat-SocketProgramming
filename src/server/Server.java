@@ -24,7 +24,7 @@ public class Server
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
             System.out.println("Creating a new handler for this client...");
-            ClientHandler clientHandler = new ClientHandler(socket,"client " + clientCount, dataInputStream, dataOutputStream, contest);
+            ClientHandler clientHandler = new ClientHandler(socket,"client " + clientCount, dataInputStream, dataOutputStream, contest.getDataOutputStream());
 
             Thread clientHandlerThread = new Thread(clientHandler);
 
