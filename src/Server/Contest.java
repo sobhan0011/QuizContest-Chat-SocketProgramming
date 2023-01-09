@@ -34,7 +34,7 @@ public class Contest implements Runnable {
         this.questionAnswers = new ArrayList<>();
         JSONParser jsonParser = new JSONParser();
         try {
-            contestQuestionAnswers = (JSONArray) jsonParser.parse(new FileReader("ContestQuestions.json"));
+            contestQuestionAnswers = (JSONArray) jsonParser.parse(new FileReader("questions.json"));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
