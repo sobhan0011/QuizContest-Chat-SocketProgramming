@@ -1,0 +1,42 @@
+[
+    {
+        "question": "How much is the cost of lies?",
+        "options": [
+            "1 million",
+            "2 million",
+            "3 million",
+            "1.3 million"
+        ],
+        "answer": 4
+    },
+    {
+        "question": "wtf is this",
+        "options": [
+            "wtf",
+            "is",
+            "th",
+            "iss"
+        ],
+        "answer": 1
+    },
+    {
+        "question": "what got",
+        "options": [
+            "iran",
+            "brazil",
+            "iraq",
+            "fuck"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "what the hell is going on",
+        "options": [
+            "oh",
+            "shit",
+            "i",
+            "fff"
+        ],
+        "answer": 3
+    }
+]
