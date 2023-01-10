@@ -29,7 +29,6 @@ public class ClientHandler implements Runnable
 
     @Override
     public void run() {
-
         String received, recipient, message;
         while (true)
         {
@@ -52,15 +51,14 @@ public class ClientHandler implements Runnable
                         recipient = str[0];
                         message = str[1];
                         if (recipient.equals("host-1"))
-                        {
-                            contestDataOutputStream.writeUTF(this.name + " : " + message);
-                            continue;
-                        }
-                        for (ClientHandler clientHandler : Server.clientHandlers)
-                            if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn) {
-                                clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
-                                break;
-                            }
+                            contestDataOutputStream.writeUTF(this.name + ":" + message);
+
+                        else
+                            for (ClientHandler clientHandler : Server.clientHandlers)
+                                if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn) {
+                                    clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
+                                    break;
+                                }
                     }
                 }
             } catch (IOException e) {

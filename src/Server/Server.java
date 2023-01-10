@@ -1,56 +1,63 @@
 package Server;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-
 public class Server
 {
     static Vector<ClientHandler> clientHandlers = new Vector<>(); // Because we need a synchronized data structure
-    private static JSONArray users;
+    static DataOutputStream contestDataOutputStream;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int usersObjNum = 0;
+        ServerSocket serverSocket = new ServerSocket(1379);
+        Socket socket;
+        DataOutputStream dataOutputStream;
+        DataInputStream dataInputStream;
+
+        JSONArray users = null;
         JSONParser jsonParser = new JSONParser();
         try {
             users = (JSONArray) jsonParser.parse(new FileReader("users.json"));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-
-        ServerSocket serverSocket = new ServerSocket(1379);
-        Socket socket;
-        Contest contest = new Contest(clientHandlers, users.size());
+        assert users != null;
+        int clientNumber = users.size() - 1;
+        Contest contest = new Contest(clientNumber);
+        socket = serverSocket.accept();
+        contestDataOutputStream = new DataOutputStream(socket.getOutputStream());
         Thread contestThread = new Thread(contest);
         contestThread.start();
 
-        while (usersObjNum < users.size())
+        int usersObjNum = 1;
+        JSONObject jsonObject;
+        String type;
+        int port;
+
+        while (usersObjNum <= clientNumber)
         {
             socket = serverSocket.accept();
-            JSONObject obj = (JSONObject) users.get(usersObjNum);
-//            String type = (String) obj.get("type");
-//            int port = Integer.parseInt(obj.get("port").toString());
-            String name = (String) obj.get("name");
-            System.out.println("Client requested socket: " + socket);
-            System.out.println(name);
-            if (!name.equals("host-1")) {
-                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                System.out.println("Creating a new handler for this client...");
-                ClientHandler clientHandler = new ClientHandler(socket, name, dataInputStream,
-                        dataOutputStream, contest.getDataOutputStream());
-                Thread clientHandlerThread = new Thread(clientHandler);
-                System.out.println("Adding this client to active client list.");
-                clientHandlers.add(clientHandler);
-                clientHandlerThread.start();
-            }
+            jsonObject = (JSONObject) users.get(usersObjNum);
+            type = (String) jsonObject.get("type");
+            port = Integer.parseInt(jsonObject.get("port").toString());
+            String name = (String) jsonObject.get("name");
+            System.out.println("Client " + name + " requested socket: " + socket);
+            dataInputStream = new DataInputStream(socket.getInputStream());
+            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Creating a new handler for this client and adding it to active client list.\n");
+            ClientHandler clientHandler = new ClientHandler(socket, name, dataInputStream,
+                    dataOutputStream, contestDataOutputStream);
+            Thread clientHandlerThread = new Thread(clientHandler);
+            clientHandlers.add(clientHandler);
+            clientHandlerThread.start();
             usersObjNum++;
         }
+
         contestThread.join();
     }
 }
