@@ -36,12 +36,8 @@ public class ClientHandler implements Runnable
             {
                 received = dataInputStream.readUTF();
                 received = received.replaceFirst("^\\s*", "");
-                System.out.println(received + " " + this.name);
-                if (received.trim().equals("logout")) {
-                    this.isloggedIn = false;
-                    this.socket.close();
-                    break;
-                }
+                System.out.println(this.name + " typed: " + received);
+
                 if (received.startsWith("msg to"))
                 {
                     String temp = received.substring(7);
@@ -61,10 +57,16 @@ public class ClientHandler implements Runnable
                                 }
                     }
                 }
+
+                else if (received.trim().equals("logout")) {
+                    this.isloggedIn = false;
+                    this.socket.close();
+                    break;
+                }
             } catch (IOException e) {
+                Thread.currentThread().interrupt(); //not good
                 e.printStackTrace();
             }
-
         }
         try {
             this.dataInputStream.close();

@@ -20,7 +20,7 @@ public class Client
                 try {
                     dataOutputStream.writeUTF(message);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.exit(0); // not good
                 }
             }
         });
@@ -28,10 +28,10 @@ public class Client
         Thread readMessage = new Thread(() -> {
             while (true) {
                 try {
-                    String massage = dataInputStream.readUTF();
-                    System.out.println(massage);
+                    String message = dataInputStream.readUTF();
+                    System.out.println(message);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.exit(0); // not good
                 }
             }
         });

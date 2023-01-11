@@ -12,6 +12,7 @@ public class Server
 {
     static Vector<ClientHandler> clientHandlers = new Vector<>(); // Because we need a synchronized data structure
     static DataOutputStream contestDataOutputStream;
+    static ArrayList<Thread> threads = new ArrayList<>();
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ServerSocket serverSocket = new ServerSocket(1379);
@@ -46,6 +47,7 @@ public class Server
             type = (String) jsonObject.get("type");
             port = Integer.parseInt(jsonObject.get("port").toString());
             String name = (String) jsonObject.get("name");
+            System.out.println("---------------------------------------------------------------------------");
             System.out.println("Client " + name + " requested socket: " + socket);
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -54,10 +56,11 @@ public class Server
                     dataOutputStream, contestDataOutputStream);
             Thread clientHandlerThread = new Thread(clientHandler);
             clientHandlers.add(clientHandler);
+            threads.add(clientHandlerThread);
             clientHandlerThread.start();
             usersObjNum++;
         }
-
         contestThread.join();
+        System.exit(0); //not good, readMessageThread in Contest never ends i think, or...
     }
 }

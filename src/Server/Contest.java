@@ -1,20 +1,14 @@
 package Server;
 
+import java.io.*;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Vector;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 public class Contest implements Runnable {
-    final static int ServerPort = 1379;
+    private final static int ServerPort = 1379;
     private String question;
     private String options;
     private int answer;
@@ -23,10 +17,9 @@ public class Contest implements Runnable {
     private final int clientNumber;
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
-    private final Socket socket;
 
     Contest(int clientNumber) throws IOException {
-        this.socket = new Socket("localhost", ServerPort);
+        Socket socket = new Socket("localhost", ServerPort);
         this.dataInputStream = new DataInputStream(socket.getInputStream());
         this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
         this.clientNumber = clientNumber;
@@ -44,6 +37,7 @@ public class Contest implements Runnable {
         int[] scores = new int[clientNumber];
         while (Server.clientHandlers.size() < clientNumber);
         while (currentQuestion < contestQuestionAnswers.size()) {
+            String temp = "\n**************************** Next Question ****************************\n";
             nextQuestion();
             String[] optionsSplit = options.split(",");
             String optionsFormat = "";
@@ -51,15 +45,14 @@ public class Contest implements Runnable {
                 optionsFormat += "\n" + (i + 1) + ". " + optionsSplit[i].substring(1, optionsSplit[i].length() - 1);
             for (int i = 0; i < clientNumber; i++) {
                 try {
-                    Server.clientHandlers.get(i).dataOutputStream.writeUTF(question + optionsFormat);
+                    Server.clientHandlers.get(i).dataOutputStream.writeUTF(temp + "Q" + (currentQuestion + 1) + ": " + question + optionsFormat);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-
             Thread readMessage = new Thread(() -> {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
                         String message = dataInputStream.readUTF();
                         if (!message.isEmpty())
@@ -70,13 +63,14 @@ public class Contest implements Runnable {
                                     answers[i] = Integer.parseInt(str[1]);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                        // not good
                     }
                 }
             });
             readMessage.start();
             long startTime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - startTime < 20000);
+            while (System.currentTimeMillis() - startTime < 45000);
             readMessage.interrupt();
 
             for (int i = 0; i < clientNumber; i++)
@@ -100,7 +94,6 @@ public class Contest implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void nextQuestion() {
@@ -113,9 +106,10 @@ public class Contest implements Runnable {
 
     private String resultTable(int[] scores) {
         StringBuilder str = new StringBuilder();
+        str.append("\n-----------------------Score Table--------------------------\n");
+
         for (int i = 0; i < this.clientNumber; i++)
-            str.append(Server.clientHandlers.get(i).getName()).append(" : ").append(scores[i]).append(".\n");
+            str.append(Server.clientHandlers.get(i).getName()).append(" : ").append(scores[i]).append("\n");
         return str.toString();
     }
-
 }
