@@ -41,7 +41,7 @@ public class Contest implements Runnable {
             nextQuestion();
             String[] optionsSplit = options.split(",");
             String optionsFormat = "";
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
                 optionsFormat += "\n" + (i + 1) + ". " + optionsSplit[i].substring(1, optionsSplit[i].length() - 1);
             for (int i = 0; i < clientNumber; i++) {
                 try {
@@ -85,7 +85,9 @@ public class Contest implements Runnable {
                     e.printStackTrace();
                 }
             }
-
+            System.out.println(str);
+            startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < 5000);
             currentQuestion++;
         }
         try {
