@@ -37,8 +37,9 @@ public class ClientHandler implements Runnable
                 received = dataInputStream.readUTF();
                 received = received.replaceFirst("^\\s*", "");
                 System.out.println(this.name + " typed: " + received);
-
-                if (received.startsWith("msg to"))
+                if (received.equals("1") || received.equals("2") || received.equals("3") || received.equals("4"))
+                    contestDataOutputStream.writeUTF(this.name + ":" + received);
+                else if (received.startsWith("msg to"))
                 {
                     String temp = received.substring(7);
                     if (temp.contains(":"))
@@ -46,15 +47,11 @@ public class ClientHandler implements Runnable
                         String[] str = temp.split(":");
                         recipient = str[0];
                         message = str[1];
-                        if (recipient.equals("host-1"))
-                            contestDataOutputStream.writeUTF(this.name + ":" + message);
-
-                        else
-                            for (ClientHandler clientHandler : Server.clientHandlers)
-                                if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn) {
-                                    clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
-                                    break;
-                                }
+                        for (ClientHandler clientHandler : Server.clientHandlers)
+                            if (clientHandler.name.equals(recipient) && clientHandler.isloggedIn) {
+                                clientHandler.dataOutputStream.writeUTF(this.name + " : " + message);
+                                break;
+                            }
                     }
                 }
 

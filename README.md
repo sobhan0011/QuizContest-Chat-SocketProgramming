@@ -8,5 +8,5 @@ Clients can chats togheter, host will see these chats too.
 How to send massage to another user:
 msg to x:y (which x is a string that equals to another user name and y is a string which is the message).
 
-How to send answer to host:
-msg to x:y (which x is a string that equals to another host name and y is the answer(1, 2, 3, 4)).
+How to send answer:
+just type 1, 2, 3 or 4.
