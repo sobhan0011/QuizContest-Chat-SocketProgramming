@@ -2,6 +2,8 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,9 +19,9 @@ public class Contest implements Runnable {
     private final int clientNumber;
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
-
+    private Socket socket;
     Contest(int clientNumber) throws IOException {
-        Socket socket = new Socket("localhost", ServerPort);
+        socket = new Socket("localhost", ServerPort);
         this.dataInputStream = new DataInputStream(socket.getInputStream());
         this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
         this.clientNumber = clientNumber;
@@ -33,10 +35,10 @@ public class Contest implements Runnable {
 
     @Override
     public void run() {
-        int[] answers = new int[clientNumber];
         int[] scores = new int[clientNumber];
         while (Server.clientHandlers.size() < clientNumber);
         while (currentQuestion < contestQuestionAnswers.size()) {
+            int[] answers = new int[clientNumber];
             String temp = "\n**************************** Next Question ****************************\n";
             nextQuestion();
             String[] optionsSplit = options.split(",");
@@ -51,27 +53,27 @@ public class Contest implements Runnable {
                 }
             }
 
-            Thread readMessage = new Thread(() -> {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        String message = dataInputStream.readUTF();
-                        if (!message.isEmpty())
-                        {
-                            String[] str = message.split(":");
-                            for (int i = 0; i < clientNumber; i++)
-                                if (Server.clientHandlers.get(i).getName().equals(str[0]) && answers[i] == 0)
-                                    answers[i] = Integer.parseInt(str[1]);
-                        }
-                    } catch (IOException e) {
-                        Thread.currentThread().interrupt();
-                        // not good
+            try {
+                socket.setSoTimeout(45000);
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+
+            while (true) {
+                try {
+                    String message = dataInputStream.readUTF();
+                    if (!message.isEmpty())
+                    {
+                        String[] str = message.split(":");
+                        for (int i = 0; i < clientNumber; i++)
+                            if (Server.clientHandlers.get(i).getName().equals(str[0]) && answers[i] == 0)
+                                answers[i] = Integer.parseInt(str[1]);
                     }
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                    break;
                 }
-            });
-            readMessage.start();
-            long startTime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - startTime < 45000);
-            readMessage.interrupt();
+            }
 
             for (int i = 0; i < clientNumber; i++)
                 if (answers[i] == answer)
@@ -85,8 +87,9 @@ public class Contest implements Runnable {
                     e.printStackTrace();
                 }
             }
+
             System.out.println(str);
-            startTime = System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < 5000);
             currentQuestion++;
         }
