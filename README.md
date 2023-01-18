@@ -15,9 +15,6 @@ just type 1, 2, 3 or 4.
 Last version using GUI:
 
 
-https://user-images.githubusercontent.com/85999439/213273631-8d187e06-d735-4745-bbfb-e4418a9d07a7.mp4
-
-
 
 https://user-images.githubusercontent.com/85999439/213274825-1f8c6a6c-63f6-4a2a-9322-778ede997c3e.mp4
 
